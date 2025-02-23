@@ -1,0 +1,41 @@
+#include <SoftwareSerial.h>
+
+SoftwareSerial BTSerial(10, 11);
+
+
+bool saw_button = false;
+bool last_button = false;
+
+void setup() {
+  BTSerial.begin(115200);
+}
+
+char whichDirection(){
+  int UD = analogRead(A2);
+  int RL = analogRead(A3);
+  if (UD < 90){ return '0';}
+  if (UD > 200){ return '1';}
+  if (RL < 90){ return '2';}
+  if (UD > 200){ return '3';}
+  return '4';
+}
+
+void loop() {
+  BTSerial.write(whichDirection());
+
+  if(digitalRead(3) = HIGH){
+    saw_button = true;
+  } else {
+    saw_button = false;
+  }
+
+  if (saw_button && !last_button){
+    BTSerial.write('5');
+  }
+  else if (!saw_button && last_button){
+    BTSerial.write('6');
+  }
+
+  last_button = saw_button;
+  delay(2);
+}
