@@ -1,0 +1,110 @@
+#include <SoftwareSerial.h>
+
+SoftwareSerial BTSerial(3, 4);
+
+int speedRightPin = 9;
+int speedLeftPin = 10;
+
+int rightForwardPin = 7;
+int rightBackPin = 8;
+int leftForwardPin = 11;
+int leftBackPin = 12;
+
+int sawMosfetPin = 2;
+
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(speedRightPin, 1);
+  pinMode(speedLeftPin, 1);
+  pinMode(rightForwardPin, 1);
+  pinMode(rightBackPin, 1);
+  pinMode(leftForwardPin, 1);
+  pinMode(leftBackPin, 1);
+
+  pinMode(sawMosfetPin, OUTPUT);
+
+  digitalWrite(rightForwardPin, 0);
+  digitalWrite(rightBackPin, 0);
+  digitalWrite(leftForwardPin, 0);
+  digitalWrite(leftBackPin, 0);
+  
+  analogWrite(speedRightPin, 130);
+  analogWrite(speedLeftPin, 130);
+}
+
+void drive(int direction){
+  
+  if (direction == 4){
+    digitalWrite(rightForwardPin, 0);
+    digitalWrite(rightBackPin, 0);
+    digitalWrite(leftForwardPin, 0);
+    digitalWrite(leftBackPin, 0);
+  }
+  if (direction == 0){
+    digitalWrite(rightForwardPin, 0);
+    digitalWrite(rightBackPin, 1);
+    digitalWrite(leftForwardPin, 0);
+    digitalWrite(leftBackPin, 1);
+  }
+  if (direction == 1){
+    digitalWrite(rightForwardPin, 1);
+    digitalWrite(rightBackPin, 0);
+    digitalWrite(leftForwardPin, 1);
+    digitalWrite(leftBackPin, 0);
+  }
+  if (direction == 2){
+    digitalWrite(rightForwardPin, 0);
+    digitalWrite(rightBackPin, 1);
+    digitalWrite(leftForwardPin, 1);
+    digitalWrite(leftBackPin, 0);
+  }
+  if (direction == 3){
+    digitalWrite(rightForwardPin, 1);
+    digitalWrite(rightBackPin, 0);
+    digitalWrite(leftForwardPin, 0);
+    digitalWrite(leftBackPin, 1);
+  }
+
+}
+
+void loop() {
+  /*
+  drive(1);
+  delay(10000);
+  */
+  
+  if (BTSerial.available()) {   // Check if data is available
+      char c = BTSerial.read();   // Read one character
+      if (c == '\n') {            // Check for end of message
+        receivedMessage.trim();   // Remove any extra whitespace
+        Serial.println("Received: " + receivedMessage); // Debug message
+        if (receivedMessage == "0"){
+          drive(0);
+        }
+        if (receivedMessage == "1"){
+          drive(1);
+        }
+        if (receivedMessage == "2"){
+          drive(2);
+        }
+        if (receivedMessage == "3"){
+          drive(3);
+        }
+        if (receivedMessage == "4"){
+          drive(4);
+        }
+        if (receivedMessage == "5"){
+          digitalWrite(sawMosfetPin, HIGH)
+        }
+        if (receivedMessage == "6"){
+          digitalWrite(sawMosfetPin, LOW)
+        }
+        
+        receivedMessage = ""; // Clear the message buffer
+      } else {
+        receivedMessage += c; // Append character to message
+      }
+    }
+  
+}
